@@ -1,8 +1,10 @@
 const http = require('http');
+const https = require('https');
 const config = require('./lib/config.js');
 const url = require('url');
 const stringDecoder = require('string_decoder').StringDecoder;
 const routerHandlers = require('./lib/routerHandler.js');
+const fs = require('fs');
 
 const httpPort = config.httpPort;
 const httpsPort = config.httpsPort;
@@ -13,7 +15,20 @@ const httpServer = http.createServer((req, res) => {
 
 httpServer.listen(httpPort, () => {
     console.log(`Server Started at ${httpPort} in ${config.envName} mode`);
-})
+});
+
+const httpsServerOptions = {
+    key : fs.readFileSync('./https/key.pem'),
+    cert: fs.readFileSync('./https/cert.pem')
+}
+
+const httpsServer = https.createServer(httpsServerOptions, (req, res) => {
+    unifiedServer(req, res);
+});
+
+httpsServer.listen(httpsPort, () => {
+    console.log(`Server Started at ${httpsPort} in ${config.envName} mode`);
+});
 
 const unifiedServer = (req, res) => {
     const parsedUrl = url.parse(req.url, true);
