@@ -1,0 +1,26 @@
+{
+  "name": "nodeJS-no-npm-challenge",
+  "version": "1.0.0",
+  "description": "Implementing a HTTP/HTTPs server using node.js without using a single npm module (pure NodeJs).",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aditya278/nodeJS-no-npm-challenge.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aditya278/nodeJS-no-npm-challenge/issues"
+  },
+  "homepage": "https://github.com/aditya278/nodeJS-no-npm-challenge#readme"
+}
