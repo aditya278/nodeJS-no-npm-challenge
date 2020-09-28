@@ -25,3 +25,6 @@ Implementing a HTTP/HTTPs server using node.js without using a single npm module
   - ```GET/users?phoneNumber=<10-digit-number>``` request will allow you to access individual users data.
   - ```DELETE/hobby?phoneNumber=<10-digit-number>&hobby=<any-hobby>``` as a request will delete the hobby specified in the request from the hobbies array of the user specified by the phone number in the request.
   - ```GET/age?phoneNumber=<10-digit-number>``` will give you the age of the user (i.e. the time since the user registered with the API.
+
+## API is Deployed to Heroku
+> https://user-mgmt-api-nonpm.herokuapp.com/users
