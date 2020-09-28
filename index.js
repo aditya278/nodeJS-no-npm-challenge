@@ -6,15 +6,14 @@ const stringDecoder = require('string_decoder').StringDecoder;
 const routerHandlers = require('./lib/routerHandler.js');
 const fs = require('fs');
 
-const httpPort = config.httpPort;
-const httpsPort = config.httpsPort;
+const { httpPort, httpsPort, envName } = config;
 
 const httpServer = http.createServer((req, res) => {
     unifiedServer(req, res);
 });
 
 httpServer.listen(httpPort, () => {
-    console.log(`Server Started at ${httpPort} in ${config.envName} mode`);
+    console.log(`Server Started at ${httpPort} in ${envName} mode`);
 });
 
 const httpsServerOptions = {
@@ -27,7 +26,7 @@ const httpsServer = https.createServer(httpsServerOptions, (req, res) => {
 });
 
 httpsServer.listen(httpsPort, () => {
-    console.log(`Server Started at ${httpsPort} in ${config.envName} mode`);
+    console.log(`Server Started at ${httpsPort} in ${envName} mode`);
 });
 
 const unifiedServer = (req, res) => {
@@ -37,7 +36,7 @@ const unifiedServer = (req, res) => {
 
     const method = req.method.toLowerCase();
 
-    const queryStringObject = parsedUrl.query;
+    const queryString = parsedUrl.query;
 
     const headers = req.headers;
 
@@ -52,11 +51,11 @@ const unifiedServer = (req, res) => {
         buffer += decoder.end();
 
         const data = {
-            'path'          : trimmedPath,
-            'method'        : method,
-            'queryString'   : queryStringObject,
-            'headers'        : headers,
-            'payload'       : buffer
+            trimmedPath,
+            method,
+            queryString,
+            headers,
+            'payload'       : JSON.parse(JSON.stringify(buffer))
         };
 
         //Choose the route (Router Logic)
