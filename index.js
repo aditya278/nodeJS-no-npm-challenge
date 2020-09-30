@@ -86,5 +86,6 @@ const unifiedServer = (req, res) => {
 const router = {
     'users' : routerHandlers.users,
     'hobby' : routerHandlers.hobby,
-    'age'   : routerHandlers.age
+    'age'   : routerHandlers.age,
+    'tokens': routerHandlers.tokens
 };
