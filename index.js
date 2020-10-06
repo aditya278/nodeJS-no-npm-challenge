@@ -34,43 +34,46 @@ httpServer.listen(httpPort, () => {
 // });
 
 const unifiedServer = (req, res) => {
-    const parsedUrl = url.parse(req.url, true);
-    path = parsedUrl.pathname;
-    const trimmedPath = path.replace(/^\/+|\/+$/g, '');
+    try {
+        const parsedUrl = url.parse(req.url, true);
+        path = parsedUrl.pathname;
+        const trimmedPath = path.replace(/^\/+|\/+$/g, '');
 
-    const method = req.method.toLowerCase();
+        const method = req.method.toLowerCase();
 
-    const queryString = parsedUrl.query;
+        const queryString = parsedUrl.query;
 
-    const headers = req.headers;
+        const headers = req.headers;
 
-    const decoder = new stringDecoder('utf-8');
-    let buffer = '';
+        const decoder = new stringDecoder('utf-8');
+        let buffer = '';
 
-    req.on('data', (data) => {
-        buffer += decoder.write(data);
-    });
+        req.on('data', (data) => {
+            buffer += decoder.write(data);
+        });
 
-    req.on('end', () => {
-        buffer += decoder.end();
+        req.on('end', async () => {
+            buffer += decoder.end();
 
-        const data = {
-            trimmedPath,
-            method,
-            queryString,
-            headers,
-            'payload'       : JSON.parse(JSON.stringify(buffer))
-        };
+            const data = {
+                trimmedPath,
+                method,
+                queryString,
+                headers,
+                'payload'       : JSON.parse(JSON.stringify(buffer))
+            };
 
-        //Choose the route (Router Logic)
-        const chosenRoute = typeof router[trimmedPath] != 'undefined' ? router[trimmedPath] : routerHandlers.notFound;
+            //Choose the route (Router Logic)
+            const chosenRoute = typeof router[trimmedPath] != 'undefined' ? router[trimmedPath] : routerHandlers.notFound;
 
-        chosenRoute(data, (statusCode, payload) => {
+            const response = await chosenRoute(data);
+            
             //Use the statusCode callback by the handler or 200
-            statusCode = typeof(statusCode) == 'number' ? statusCode : 200;
+            let statusCode = typeof(response.statusCode) == 'number' ? response.statusCode : 200;
 
             //Use the payload called back by the handler or default to an empty object
-            payload = typeof(payload) == 'object' ? payload : {};
+            let payload = typeof(response.message) === 'object' 
+                ? response.message : typeof response.message === 'string' ? {'message' : `${response.message}`} : {};
 
             let payloadString = JSON.stringify(payload);
 
@@ -78,9 +81,16 @@ const unifiedServer = (req, res) => {
             res.writeHead(statusCode);
             res.end(payloadString);
             console.log(statusCode, payloadString);
-        })
 
-    });
+        });
+    }
+    catch(err) {
+        console.error(err);
+        res.setHeader('Content-Type', 'application/json');
+        res.writeHead(400);
+        res.end('Some Error Encountered. Please try again later.');
+        console.log(statusCode, payloadString);
+    }
 }
 
 const router = {
